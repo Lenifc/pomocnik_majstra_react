@@ -1,13 +1,19 @@
-body {
-  margin: 0;
-  box-sizing: border-box;
-  padding: 0;
-  height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600');
+
+*, *:before, *:after{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-size: 16px;
+    /* background-color: #202847; */
+    background-color: #20262E; /* bootstrap BGC dark */
+    /* background-color: #17212F; materialize BGC dark */
+    color: var(--text-color);
+    font-family: 'Source Sans Pro', sans-serif;
+    height:  100vh;
 }
 
 #root {
