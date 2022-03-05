@@ -1,6 +1,10 @@
 This will be a copy of my Bachelor's app written in Vue3
 
 
+##
+Currently work in progress
+##
+
 
 
 ## Available Scripts
