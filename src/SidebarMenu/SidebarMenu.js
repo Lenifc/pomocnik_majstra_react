@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Divider } from 'primereact/divider';
 import { InputSwitch } from 'primereact/inputswitch';
 
@@ -8,7 +8,11 @@ import { ProSidebar, Menu, MenuItem } from 'react-pro-sidebar';
 
 function SidebarMenu( {Logout}){
 
-    const [collapsed, setCollapsed] = useState(false)
+    const [collapsed, setCollapsed] = useState(localStorage.getItem('menuStatus') ? JSON.parse(localStorage.getItem('menuStatus')) : false)
+
+    useEffect(() =>{
+      localStorage.setItem('menuStatus',collapsed)
+    }, [collapsed])
 
     return(<>
     <ProSidebar
@@ -21,44 +25,44 @@ function SidebarMenu( {Logout}){
         <InputSwitch 
           checked={!collapsed} 
           onChange={(e) => setCollapsed(!e.value)} 
-          tooltip={collapsed ? "Rozwiń menu" : "Zwiń menu"}
-          className="MenuSlider"
+          tooltip={collapsed ? "Expand menu" : "Collapse menu"}
+          className="menuSlider"
         />
-            <div className={`MenuTitle ${collapsed ? 'hidden' : ''}`}>WARSZTAT</div>
+            <div className={`menuTitle ${collapsed ? 'hidden' : ''}`}>General</div>
             <MenuItem icon={<i className="fas fa-desktop" />} >
               Dashboard<Link to="/dashboard" />
             </MenuItem>
             <MenuItem icon={<i className="fas fa-user" />}>
-              Zarządzaj klientami<Link to="/clients" />
+              Clients Manager<Link to="/clients" />
             </MenuItem>
             <MenuItem icon={<i className="fas fa-car" />}>
-              Zarządzaj pojazdami<Link to="/vehicles" />
+              Vehicles Manager<Link to="/vehicles" />
             </MenuItem>
             <Divider />
-            <div className={` MenuTitle ${collapsed ? 'hidden' : ''}`}>ZLECENIA</div>
+            <div className={` menuTitle ${collapsed ? 'hidden' : ''}`}>Tasks</div>
             <MenuItem icon={<i className="fas fa-plus" />}>
-              Dodaj nowe zlecenie<Link to="/tasks/create-new" />
+              Create new task<Link to="/tasks/create-new" />
             </MenuItem>
             <MenuItem icon={<i className="fas fa-parking" />}>
-              Oczekujące<Link to="/tasks/new" />
+              New<Link to="/tasks/new" />
             </MenuItem>
             <MenuItem icon={<i className="fas fa-tasks" />}>
-              W trakcie realizacji<Link to="/tasks/inprogress" />
+              in Progress<Link to="/tasks/inprogress" />
             </MenuItem>
             <MenuItem icon={<i className="fas fa-check" />}>
-              Zakończone<Link to="/tasks/closed" />
+              Closed<Link to="/tasks/closed" />
             </MenuItem>
             <Divider />
             <MenuItem icon={<i className="fas fa-search" />}>
-              Szukaj pojazd/klienta<Link to="/search" />
+              Search for  client/car<Link to="/search" />
             </MenuItem>
             <Divider />
-            <div className={`MenuTitle ${collapsed ? 'hidden' : ''}`}>USTAWIENIA</div>
-            <MenuItem icon={<i className="fas fa-tools MenuItem-disabled" />}>Kategorie i ceny</MenuItem>
-            <MenuItem icon={<i className="fas fa-file-invoice-dollar" />}>Dane warsztatu</MenuItem>
-            <MenuItem icon={<i className="fas fa-cogs" />}>Ustawienia i pomoc</MenuItem>
+            <div className={`menuTitle ${collapsed ? 'hidden' : ''}`}>Settings</div>
+            <MenuItem className="menuItem-disabled" icon={<i className="fas fa-tools" />}>Categories and prices</MenuItem>
+            <MenuItem icon={<i className="fas fa-file-invoice-dollar" />}>Workshop details <Link to="/workshop/details" /></MenuItem>
+            <MenuItem icon={<i className="fas fa-cogs" />}>Settings and Support<Link to="/settings" /></MenuItem>
             <Divider />
-            <MenuItem icon={<i className="fas fa-power-off" />} onClick={() => Logout()}>Wyloguj</MenuItem>
+            <MenuItem icon={<i className="fas fa-power-off" />} onClick={() => Logout()}>Sign out</MenuItem>
         </Menu>
       </ProSidebar>          
     </>)
