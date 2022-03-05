@@ -1,15 +1,12 @@
-.app {
-    height: 100%;
-    display: flex;
-    position: relative;
-  }
-
+.App{
+  margin: 24px 8px;
+}
 
 .pro-icon{
   font-size: 22px;
 }
 
-.MenuTitle{
+.menuTitle{
   font-weight: bold;
   text-transform: uppercase;
   padding-left: 18px;
@@ -17,8 +14,17 @@
   padding-bottom: 6px;
 }
 
-
-.MenuSlider{
+.menuSlider{
   margin: 12px;
   margin-bottom: 10px
+}
+
+.menuItem-disabled,
+.menuItem-disabled .pro-item-content,
+.menuItem-disabled .pro-inner-item,
+.menuItem-disabled i,
+.menuItem-disabled .pro-icon{
+  cursor:default!important;
+  background-color: #1d1d1dde;
+  color: #555;
 }
