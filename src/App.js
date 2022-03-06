@@ -46,6 +46,11 @@ function App() {
 
   const toast = useRef()
   const [userLoggedIn, setUserLoggedIn] = useState()
+  const [collapsed, setCollapsed] = useState(localStorage.getItem('menuStatus') ? JSON.parse(localStorage.getItem('menuStatus')) : false)
+
+  useEffect(() =>{
+    setCollapsed(JSON.parse(localStorage.getItem('menuStatus')))
+  }, [localStorage.getItem('menuStatus')])
 
   function checkAuthStatus() {
     auth.onAuthStateChanged(user => {
@@ -112,13 +117,15 @@ function App() {
   <>
     <Toast ref={toast}></Toast>
     <BrowserRouter>
-    {userLoggedIn === false && 
-    <LoginModule loginWithGoogle={loginWithGoogle} 
-                 emailLogin={(credentials) => emailLogin(credentials)} />}
+    {userLoggedIn === false && <>
+      <LoginModule loginWithGoogle={loginWithGoogle} 
+                 emailLogin={(credentials) => emailLogin(credentials)} />
+      <Navigate to="/" />
+    </>}
     {userLoggedIn && <>
-      <SidebarMenu Logout={() => logOutFromAccount()}/>
+      <SidebarMenu Logout={() => logOutFromAccount()} isMenuCollapsed={(newVal) => setCollapsed(newVal)}/>
         
-        <div className="App">
+        <div className="App" style={{paddingLeft: collapsed ? '80px' : '250px'}}>
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/vehicles" element={<ManageVehicles />} />
@@ -136,7 +143,7 @@ function App() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/workshop/details" element={<WorkshopDetails />} />
             
-            <Route path="/*" element={userLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/" />} />
+            <Route path="/*" element={<Navigate to="/dashboard" />} />
           </Routes>
         </div>
       </>}

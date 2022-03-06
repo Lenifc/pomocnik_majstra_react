@@ -1,0 +1,11 @@
+
+.fa-plus,
+.fa-minus{
+  font-size: 0.75rem!important;
+  display: flex;
+  align-items: center;
+}
+
+.Cars:last-child > .p-divider{
+    display: none;
+  }
