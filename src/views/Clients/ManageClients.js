@@ -4,17 +4,28 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext'
 import { FilterMatchMode } from 'primereact/api';
 import { Divider } from 'primereact/divider';
-import { Toast } from 'primereact/toast';
+import { confirmDialog } from 'primereact/confirmdialog'
 
-import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
+
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+
+import ContextStore from '../../store/ContextStore'
 
 import firebase from 'firebase/app'
 
+
+import { DeleteFunc } from '../../components/EditMoveDeleteOptions'
 import copyToClipboard from '../../components/copyToClipboard.js'
 
 import './ManageClients.css'
 
 function ManageClients(){
+
+    const navigate = useNavigate()
+    const { getClientData } = useContext(ContextStore)
 
     const [isLoading, setIsLoading] = useState(true)
     const [recivedClients, setRecivedClients] = useState([])
@@ -26,7 +37,6 @@ function ManageClients(){
     const [tableFilters, setTableFilters] = useState({ 'global': { value: '', matchMode: FilterMatchMode.CONTAINS }})
     const clearTableFilters = () => { setTableFilters({ 'global': { value: '', matchMode: FilterMatchMode.CONTAINS }})}
 
-    const toast = useRef()
 
     const MainPath = firebase.firestore()
                     .collection('warsztat').doc('Klienci').collection('Numery')
@@ -41,7 +51,6 @@ function ManageClients(){
 		useEffect(() => {
 			getClientsFromFirebase()
 		}, [])
-
 
 
      async function getClientsFromFirebase(req) {
@@ -74,36 +83,30 @@ function ManageClients(){
 
        if (!clientResponse.docs.length || req === 'all' || clientResponse.docs.length < limit) {
          setDisableNextButton(true)
-         toast.current.clear()
-         toast.current.show({ severity: 'info', detail: 'All clients have been downloaded!', life: 4000 })
+         toast.info('All clients have been downloaded!', {autoClose: 3000})
        }
      }
 
 
-    const confirmDeleteModal = async (clientData) => {
-        console.log(clientData);
-
-        // confirm.require({
-        //   message: `Czy napewno chcesz usunąć klienta o podanym numerze telefonu: ${clientData['Tel']}?`,
-        //   header: `Usuń klienta`,
-        //   icon: 'pi pi-exclamation-triangle',
-        //   acceptClass: 'p-button-success',
-        //   rejectClass: 'p-button-danger',
-        //   acceptLabel: 'Tak',
-        //   rejectLabel: 'Nie',
-        //   accept: async () => {
-        //     const { Tel } = clientData
- 
-        //       const confirmDelete = await DeleteFunc('client', MainPath, Tel)
-        //       if (confirmDelete !== false) {
-        //         recivedClients.value = recivedClients.value.filter(client => client.Tel != Tel)
-        //         toast.removeAllGroups()
-        //         toast.add({ severity: 'success', detail: 'Pomyślnie usunięto dane klienta', life: 4000 })
-        //       }
-        //   },
-        //   reject: async () => {}
-        // })
+    const confirmDeleteModal = async ({Tel}) => {
+          confirmDialog({
+            message: `Are you sure you want to delete client ${Tel}?`,
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            acceptClassName: 'p-button-success',
+            rejectClassName: 'p-button-danger',
+            accept: () => {
+              let confirm = DeleteFunc('client', MainPath , Tel)
+              if(confirm !== false) {
+                toast.success("Client's data successfully deleted.")
+                setRecivedClients(recivedClients.filter(client => client.Tel !== Tel)) 
+              }
+              else toast.error("Unable to delete client data, please try again!")
+            },
+            reject: () => {}
+          })
       }
+
       function showEvent(searchVal) {
         if (searchVal.length > 2) setTableFilters({ 'global': { value: searchVal, matchMode: FilterMatchMode.CONTAINS }})
         else setTableFilters({ 'global': { value: '', matchMode: FilterMatchMode.CONTAINS }})
@@ -113,7 +116,7 @@ function ManageClients(){
         const text = e.target?.innerText
         copyToClipboard(text)
 
-        toast.current.show({severity: 'info', summary: 'Value copied', detail: `Value: "${text}" has been copied to Clipboard`, life: 3000})
+        toast.info(`Value: "${text}" has been copied to Clipboard`, {autoClose: 3000})
       }
 
       function onlyCars(clientTel) {
@@ -132,45 +135,38 @@ function ManageClients(){
 			}
 
 
+      function redirectToClientDetails(client) {
+          getClientData(client)
+          navigate(`/clients/details/${client.Tel}`)
+      }
+      function openClientEditForm(client) {
+          getClientData(client)
+          navigate(`/clients/details/${client.Tel}/edit`)
+      }
 
+      function redirectToCarDetails(car, data) {
+       //  store.commit('setTargetCar', car)
+       //  store.commit('setTargetClient', data)
+       //  Router.push(`/szczegoly/${car.VIN}`)
+      }
 			 function openVehicleEditForm(item) {
 				//  store.commit('setTargetCar', item)
 				//  Router.push(`/pojazd/${item.VIN}/edytuj`)
 			 }
-			 function redirectToCarDetails(car, data) {
-				//  store.commit('setTargetCar', car)
-				//  store.commit('setTargetClient', data)
-				//  Router.push(`/szczegoly/${car.VIN}`)
-			 }
 
-      function openClientEditForm(item) {
-        // store.commit('setTargetClient', item)
-        // Router.push(`/klient/${item.Tel}/edytuj`)
-        console.log(item);
-      }
 
       function openVehicleAddForm(Tel) {
           console.log(Tel);
         // store.commit('setNumberForNewVehicle', Tel)
         // Router.push('/pojazd/dodaj')
       }
-      function redirectToClientDetails(client) {
-          console.log(client);
-        // store.commit('setTargetClient', client)
-        // Router.push(`/szczegoly/client/${client.Tel}`)
-      }
-
-      function openClientAddForm() {
-        // Router.push(`/klient/dodaj`)
-      }
-
 
 
 
     const tableHeader = 
     <div className="flex justify-content-between flex-column sm:flex-row">
         <Button icon="pi pi-filter-slash" label="Clear" className="p-button-outlined" onClick={() => clearTableFilters()} />
-        <div className="my-3 sm:my-0 text-center">{ recivedClients?.length || 0 } of { totalNumberOfClients } clients available</div>
+        <div className="my-3 sm:my-0 text-center">{ recivedClients?.length || 0 } of { totalNumberOfClients } clients available for search</div>
         <span className="p-input-icon-left">
             <i className="pi pi-search" />
             <InputText placeholder="Filter..." onKeyUp={(e) => showEvent(e.target.value.trim())} tooltip="Type at least 3 characters to search" tooltipOptions={{position: 'left'}}/>
@@ -194,7 +190,7 @@ function ManageClients(){
 
     const telephoneBody = (data) => {
         return(
-            <div className="flex flex-column" onDoubleClick={(e) => copyValue(e)}>
+            <div className="flex flex-column text-center mx-auto" onDoubleClick={(e) => copyValue(e)} style={{width: '96px', maxWidth:'120px'}}>
                 <div>{data.Tel}</div>
                 <div className={data.Tel2 ? "" : 'hidden'}> { data.Tel2 }</div>
             </div>
@@ -210,18 +206,18 @@ function ManageClients(){
 
     const vehiclesBody = (data) => {
         return(
-            <div className="flex flex-column smallerFontOnPhones lowerMargin" onDoubleClick={(e) => copyValue(e)}>
+            <div className="flex flex-column smaller-font-for-phones lower-margin" onDoubleClick={(e) => copyValue(e)}>
         		<div className="flex flex-column">
             {onlyCars(data.Tel).map((car) => {
                 return(
 								<div key={car.VIN} className="Cars">
                   <div className="flex flex-row align-items-center justify-content-between" id={`id${car.VIN}`}>
                     <div className="flex flex-column">
-                      <div className="text-center text-wrap text-bold">{`${car.Marka} ${car.Model}`}</div>
-                      <div className="text-nowrap text-truncate width160OnPhones" style={{width:'220px', maxWidth:'225px'}}>{car.VIN}</div>
+                      <div className="text-center text-wrap font-bold">{`${car.Marka} ${car.Model}`}</div>
+                      <div className="text-center white-space-nowrap overflow-hidden text-overflow-ellipsis width-160-for-phones" style={{width:'220px', maxWidth:'225px'}}>{car.VIN}</div>
                     </div>
-                    <div className="flex flex-row justify-content-end align-items-center lowerMargin pl-1 pointer">
-											<i className="fas fa-minus" tooltip="Usuń powiązanie pojazdu z klientem" onClick={() => relocateFunc(car, car.VIN)}><i className="fas fa-car"></i></i>
+                    <div className="flex flex-row justify-content-end align-items-center lower-margin pl-1 pointer">
+											<i className="fas fa-minus" tooltip="Delete vehicle bindings to the client" onClick={() => relocateFunc(car, car.VIN)}><i className="fas fa-car"></i></i>
 											<i className="fas fa-info-circle px-2" tooltip="Vehicle Details" onClick={() => redirectToCarDetails(car, data)}></i>
 											<i className="fas fa-edit" tooltip="Edit Vehicle's data" onClick={() => openVehicleEditForm(car)}></i>
                     </div>
@@ -236,16 +232,14 @@ function ManageClients(){
 
 
 
-
     return(<>
-    <Toast ref={toast} />
     <div className="flex flex-column">
 
     <div className="flex flex-column align-items-center justify-content-center">
-        <Button label="Add new client" icon="pi pi-user-plus" onClick={() => openClientAddForm()}
+        <Button label="Add new client" icon="pi pi-user-plus" onClick={() => navigate('/clients/create-new')}
             className="p-button-outlined p-button-success flex align-items-center my-3" />
         <Button className={`p-button-secondary p-flex column mb-3 ${disableNextButton ? 'hidden' : ''}`} onClick={() => getClientsFromFirebase('all')} label="Get all clients from Firestore" 
-            v-if="!disableNextButton" icon={(!recivedClients || isLoading) ? 'pi pi-spin pi-spinner' : 'pi pi-download'} />
+                icon={(!recivedClients || isLoading) ? 'pi pi-spin pi-spinner' : 'pi pi-download'} />
     </div>
 
  <DataTable header={tableHeader} loading={!recivedClients || isLoading} value={recivedClients} responsiveLayout="stack" breakpoint="1280px" 
@@ -258,6 +252,10 @@ function ManageClients(){
     <Column field="Imie" header="Client Name" className="text-center" body={clientNameBody} />
     <Column field="Opis" header="Description" className="text-center" body={(data) => <div className="px-4 text-wrap" dangerouslySetInnerHTML={{__html: data.Opis}}></div>} />
     <Column header="Vehicles" className="p-text-center" style={{width:'270px'}} field="Pojazdy" body={vehiclesBody} />
+    {/* Whole vehicle component is rendered above */}
+    {/* Below columns are hidden, because they are needed just to filter in the search box */}
+    <Column header="VIN" className="hidden" field={(data) => onlyCars(data.Tel).map(car => car.VIN)} />
+    <Column header="Manufacture and Model" className="hidden" field={(data) => onlyCars(data.Tel).map(car => `${car.Marka} ${car.Model}`)} />
  </DataTable> 
 
 <Button className={`p-button-secondary my-4 mx-auto ${disableNextButton ? 'hidden' : ''}`} onClick={() => getClientsFromFirebase('more')} 

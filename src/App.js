@@ -1,15 +1,16 @@
 import './App.css';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
+import  { ContextProvider } from './store/ContextStore'
 
 import 'react-pro-sidebar/dist/css/styles.css';
 
 import SidebarMenu from './SidebarMenu/SidebarMenu'
 import Dashboard from './views/Dashboard/Dashboard';
 import ManageVehicles from './views/Vehicles/ManageVehicles';
-import NewVehicleForm from './views/Vehicles/NewVehicleForm';
+import VehicleForm from './views/Vehicles/VehicleForm';
 import VehicleDetails from './views/Vehicles/VehicleDetails';
 import ManageClients from './views/Clients/ManageClients';
-import NewClientForm from './views/Clients/NewClientForm';
+import ClientForm from './views/Clients/ClientForm';
 import ClientDetails from './views/Clients/ClientDetails';
 import ManageTasks from './views/Tasks/ManageTasks';
 import NewTaskForm from './views/Tasks/NewTaskForm';
@@ -19,11 +20,12 @@ import SettingsPage from './views/SettingsPage/SettingsPage';
 import WorkshopDetails from './views/SettingsPage/WorkshopDetails';
 import LoginModule from './views/Login/LoginModule';
 
-import { Toast } from 'primereact/toast';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import firebase from 'firebase/app'
 import { firebaseConfig } from './firebase/config'
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 require('firebase/auth')
 require('firebase/firestore')
 require('firebase/functions')
@@ -44,30 +46,39 @@ const auth = firebase.auth()
 
 function App() {
 
-  const toast = useRef()
   const [userLoggedIn, setUserLoggedIn] = useState()
+  const [pageLoading, setPageLoading] = useState(true)
   const [collapsed, setCollapsed] = useState(localStorage.getItem('menuStatus') ? JSON.parse(localStorage.getItem('menuStatus')) : false)
 
   useEffect(() =>{
     setCollapsed(JSON.parse(localStorage.getItem('menuStatus')))
   }, [localStorage.getItem('menuStatus')])
 
+  useEffect(() => {
+    if(userLoggedIn !== undefined) setPageLoading(Boolean(false))
+  }, [userLoggedIn])
+
+  useEffect(() => {
+    checkAuthStatus() 
+  }, [])
+
+
   function checkAuthStatus() {
-    auth.onAuthStateChanged(user => {
-      user ? setUserLoggedIn(user) : setUserLoggedIn(false)
+      auth.onAuthStateChanged(user => {
+      user ? setUserLoggedIn(user) : setUserLoggedIn('')
     })
   }
 
   function loginWithGoogle(){
     auth.signInWithPopup(provider).then(() => {
         checkAuthStatus()
-        // const provideData = auth.currentUser.providerData
-        // console.log(provideData);
-        toast.current.show({severity:'success', summary: 'Sign in', detail:`User signed in!`, life: 2500})
+        const provideData = auth.currentUser.providerData[0]
 
-        // callLogs({provideData})
+        toast.dismiss()
+        toast.success(`User signed in. Hello, ${provideData.displayName || provideData.email}`)
       }).catch((error) => {
-      toast.add({severity:'error', detail: error.message, life: 8000})
+      console.error(error)
+      toast.error(`${error.message}`)
     })
   }
 
@@ -75,18 +86,14 @@ function App() {
     const {username, pwd } = credentials
     if(username && pwd){
       firebase.auth().signInWithEmailAndPassword(username, pwd).then(() => {
-          toast.current.clear()
-          toast.current.show({severity:'success', summary: 'Sign in', detail:`User signed in!`, life: 2500})
-          // const provideData = auth.currentUser.providerData
-          // console.log(provideData);
-          // callLogs({provideData})
+          const provideData = auth.currentUser.providerData[0]
+
+          toast.dismiss()
+          toast.success(`User signed in. Hello, ${provideData.displayName || provideData.email}`)
         })
         .catch(error =>{
-          toast.current.clear()
-          const errorCode = error.code
-          const errorMessage = error.message
-
-          toast.current.show({severity:'error', summary: errorCode, detail: errorMessage, life: 8000})
+          toast.dismiss()
+          toast.error(`${error.code}: ${error.message}`)
         })
     } 
   }
@@ -94,7 +101,8 @@ function App() {
   function logOutFromAccount() {
     auth.signOut().then(() => {
       checkAuthStatus()
-      toast.current.show({severity:'info', summary: 'Sign out', detail:`User signed out!`, life: 2500})
+      toast.dismiss()
+      toast.info('User signed out!')
       // down below are functions that clear all the saved data in local memory
       firebase.firestore().terminate()
       localStorage.clear()
@@ -105,35 +113,46 @@ function App() {
       firebase.firestore().clearPersistence()
     })
       .catch((error) => {
-        toast.current.show({severity:'error', summary: error, detail:error?.message, life: 2500})
+        toast.error(`${error}: ${error.message}`)
     })
   }
 
-  useEffect(() => {
-    checkAuthStatus() 
-  }, [])
-
   return (
-  <>
-    <Toast ref={toast}></Toast>
+  <ContextProvider>
+   <ToastContainer
+    // default parameters for toast notifications
+        position="top-right"
+        autoClose={6000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable={false}
+        pauseOnHover
+    />
+
     <BrowserRouter>
-    {userLoggedIn === false && <>
-      <LoginModule loginWithGoogle={loginWithGoogle} 
-                 emailLogin={(credentials) => emailLogin(credentials)} />
-      <Navigate to="/" />
+    {!userLoggedIn && !pageLoading && <>
+        <LoginModule  loginWithGoogle={loginWithGoogle} 
+          emailLogin={(credentials) => emailLogin(credentials)} />
+      {/* <Navigate to="/" replace />   */}
+      {/* Got an infinite loop error (?) while trying to redirect to main path when not logged - check how to fix it  */}
     </>}
-    {userLoggedIn && <>
+    {userLoggedIn && !pageLoading && <>
       <SidebarMenu Logout={() => logOutFromAccount()} isMenuCollapsed={(newVal) => setCollapsed(newVal)}/>
         
         <div className="App" style={{paddingLeft: collapsed ? '80px' : '250px'}}>
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/vehicles" element={<ManageVehicles />} />
-            <Route path="/vehicles/create-new" element={<NewVehicleForm />} />
+            <Route path="/vehicles/create-new" element={<VehicleForm />} />
             <Route path="/vehicles/details/:vin" element={<VehicleDetails />} />
+            <Route path="/vehicles/details/:vin/edit" element={<VehicleForm />} />
             <Route path="/clients" element={<ManageClients />} />
-            <Route path="/clients/create-new" element={<NewClientForm />} />
+            <Route path="/clients/create-new" element={<ClientForm />} />
             <Route path="/clients/details/:tel" element={<ClientDetails />} />
+            <Route path="/clients/details/:tel/edit" element={<ClientForm />} />
             <Route path="/tasks/new" element={<ManageTasks />} />
             <Route path="/tasks/inprogress" element={<ManageTasks />} />
             <Route path="/tasks/closed" element={<ManageTasks />} />
@@ -148,7 +167,7 @@ function App() {
         </div>
       </>}
     </BrowserRouter>
-  </>
+  </ContextProvider>
   )
 }
 
