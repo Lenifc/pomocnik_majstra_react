@@ -9,3 +9,23 @@
 .Cars:last-child > .p-divider{
     display: none;
   }
+
+  @media(max-width:1370px){
+    .lower-margin{
+      margin-left: -16px;
+    }
+  }
+  @media(max-width:1280px){
+    .lower-margin{
+      margin-left: 0px;
+    }
+  }
+  
+  @media(max-width:500px){
+    .smaller-font-for-phones{
+      font-size: 0.9rem;
+    }
+    .width-160-for-phones{
+      width: 160px!important;
+    }
+  }
