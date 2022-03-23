@@ -6,12 +6,13 @@ import { Link } from 'react-router-dom'
 
 import { ProSidebar, Menu, MenuItem } from 'react-pro-sidebar';
 
-function SidebarMenu( {Logout}){
+function SidebarMenu( {Logout, isMenuCollapsed}){
 
     const [collapsed, setCollapsed] = useState(localStorage.getItem('menuStatus') ? JSON.parse(localStorage.getItem('menuStatus')) : false)
 
     useEffect(() =>{
       localStorage.setItem('menuStatus',collapsed)
+      isMenuCollapsed(collapsed)
     }, [collapsed])
 
     return(<>

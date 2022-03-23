@@ -1,9 +1,23 @@
 .App{
-  margin: 24px 8px;
+  margin: 24px auto;
+  width: 98%
 }
 
 .pro-icon{
   font-size: 22px;
+}
+
+.pointer{
+  cursor: pointer;
+}
+
+i{
+  font-size: 1.5rem;
+}
+
+a{
+  color:var(--yellow-200);
+  text-decoration: none;
 }
 
 .menuTitle{
@@ -27,4 +41,29 @@
   cursor:default!important;
   background-color: #1d1d1dde;
   color: #555;
+}
+
+
+
+@media(max-width:1370px){
+  .lowerMargin{
+    margin-left: -16px;
+  }
+}
+@media(max-width:1280px){
+  .lowerMargin{
+    margin-left: 0px;
+  }
+  .DescriptionDisplayNone{
+    display: none;
+  }
+}
+
+@media(max-width:500px){
+  .smallerFontOnPhones{
+    font-size: 0.9rem;
+  }
+  .width160OnPhones{
+    width: 160px!important;
+  }
 }

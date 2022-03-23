@@ -13,7 +13,6 @@ function LoginModule({emailLogin, loginWithGoogle}){
     })
 
     const title = <span>
-        {/* <div className="closehtmlForm">&times;</div> */}
         <div className="text-center">Sign in to Pomocnik Majstra®️</div>
     </span>;
 
