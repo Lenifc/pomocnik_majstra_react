@@ -17,7 +17,7 @@ import ContextStore from '../../store/ContextStore'
 import firebase from 'firebase/app'
 
 
-import { DeleteFunc } from '../../components/EditMoveDeleteOptions'
+import { DeleteFunc, relocateCarsFunc } from '../../components/EditMoveDeleteOptions'
 import copyToClipboard from '../../components/copyToClipboard.js'
 
 import './ManageClients.css'
@@ -25,7 +25,7 @@ import './ManageClients.css'
 function ManageClients(){
 
     const navigate = useNavigate()
-    const { getClientData } = useContext(ContextStore)
+    const { getClientData, getVehicleData, getActivePhoneNumber } = useContext(ContextStore)
 
     const [isLoading, setIsLoading] = useState(true)
     const [recivedClients, setRecivedClients] = useState([])
@@ -123,17 +123,15 @@ function ManageClients(){
         return recivedVehicles.map(car => car).filter(item => item?.Tel === clientTel)
       }
 
-
-			async function relocateFunc(carData, target, extraInfo) {
-				// const confirmUnassign = await relocateCarsFunc(carData, target)
-				// 	if (confirmUnassign !== false) {
-				// 		toast.removeAllGroups()
-				// 		toast.add({severity:'success', detail:'Pomyślnie usunięto powiązanie pojazdu z klientem.', life: 4000})
-				// 		if(extraInfo) toast.add({severity:'info', detail:'Pojazd zawiera historię serwisową przez co nie można go całkowicie usunąć z bazy.', life: 8000})
-				// 		recivedVehicles.value.map(car => car.VIN == target ? car.Tel = '' : car)
-				// 	}
+			async function relocateFunc(carData, target) {
+				const confirmUnassign = await relocateCarsFunc(carData, target)
+					if (confirmUnassign !== false) {
+						toast.dismiss()
+						toast.success('Successfully deleted vehicle assigment.')
+						let filterVehicles = recivedVehicles.map(car => car.VIN === target ? car.Tel = '' : car)
+            setRecivedVehicles(filterVehicles)
+					}
 			}
-
 
       function redirectToClientDetails(client) {
           getClientData(client)
@@ -144,21 +142,20 @@ function ManageClients(){
           navigate(`/clients/details/${client.Tel}/edit`)
       }
 
-      function redirectToCarDetails(car, data) {
-       //  store.commit('setTargetCar', car)
-       //  store.commit('setTargetClient', data)
-       //  Router.push(`/szczegoly/${car.VIN}`)
+      function redirectToCarDetails(vehicle, client) {
+          getClientData(client)
+          getVehicleData(vehicle)
+          navigate(`/vehicles/details/${vehicle.Tel}`)
       }
-			 function openVehicleEditForm(item) {
-				//  store.commit('setTargetCar', item)
-				//  Router.push(`/pojazd/${item.VIN}/edytuj`)
+			 function openVehicleEditForm(vehicle) {
+          getVehicleData(vehicle)
+          navigate(`/vehicles/details/${vehicle.Tel}/edit`)
 			 }
 
-
       function openVehicleAddForm(Tel) {
-          console.log(Tel);
-        // store.commit('setNumberForNewVehicle', Tel)
-        // Router.push('/pojazd/dodaj')
+          getActivePhoneNumber(Tel)
+          toast.success(`Phone number ${Tel} has been copied to clipboard`)
+          navigate(`/vehicles`)
       }
 
 
