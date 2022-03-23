@@ -14,9 +14,14 @@ export function ContextProvider({children}) {
     setActiveVehicle(data)
   }
 
+  const [activePhoneNumber, setActivePhoneNumber] = useState({})
+  const getActivePhoneNumber = (data) => {
+    setActivePhoneNumber(data)
+  }
+
 
   return (
-    <ContextStore.Provider value={{activeClient, getClientData, activeVehicle, getVehicleData}}>
+    <ContextStore.Provider value={{activeClient, getClientData, activeVehicle, getVehicleData, activePhoneNumber, getActivePhoneNumber}}>
       {children}
     </ContextStore.Provider>
   )
