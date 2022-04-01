@@ -4,17 +4,17 @@ const ContextStore = createContext()
 
 
 export function ContextProvider({children}) {
-  const [activeClient, setActiveClient] = useState({})
+  const [activeClient, setActiveClient] = useState('')
   const getClientData = (data) => {
     setActiveClient(data)
   }
 
-  const [activeVehicle, setActiveVehicle] = useState({})
+  const [activeVehicle, setActiveVehicle] = useState('')
   const getVehicleData = (data) => {
     setActiveVehicle(data)
   }
 
-  const [activePhoneNumber, setActivePhoneNumber] = useState({})
+  const [activePhoneNumber, setActivePhoneNumber] = useState('')
   const getActivePhoneNumber = (data) => {
     setActivePhoneNumber(data)
   }
