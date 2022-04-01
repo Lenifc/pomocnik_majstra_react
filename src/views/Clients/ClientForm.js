@@ -40,10 +40,10 @@ function ClientForm(){
 		city: '',
     })
 	const clientTypes = [{name: 'Individual', key: 'individual'}, {name: 'Company / Self-employed', key:'company'}]
-	const [filledForm, setFilledForm] = useState(clearForm[0])
+	const [clientForm, setClientForm] = useState(clearForm[0])
 
 	useEffect(() => {
-		if(pathname.indexOf('edit') <= 0) setFilledForm(clearForm[0])
+		if(pathname.indexOf('edit') <= 0) setClientForm(clearForm[0])
 		else {
 			(Object.keys(activeClient).length && pathname.indexOf('edit') > 0) ? autoFillData() : navigate('/clients/create-new')
 		}
@@ -57,8 +57,8 @@ function ClientForm(){
 	
 	function autoFillData() {
 		// rename/convert polish naming of parameters from FirebaseStore to english naming convention used in this React App
-		setFilledForm({
-			...filledForm,
+		setClientForm({
+			...clientForm,
 			phoneNum: activeClient['Tel'] || '',
 			phoneNum2: activeClient['Tel2'] || '',
 			name: activeClient['Imie'] || '',
@@ -74,9 +74,9 @@ function ClientForm(){
     function validateData(){
 		document.querySelectorAll('.p-invalid').forEach(input => input?.classList?.remove('p-invalid'))
 		
-		if(!filledForm.phoneNum || !validPhoneNum(filledForm.phoneNum)) document.querySelector('#phoneNum').classList.add('p-invalid')
-		if(filledForm.typeOfClient === 'company' && (!filledForm.companyId || filledForm.companyId?.length < 10)) document.querySelector('#taxNumber').classList.add('p-invalid')
-		if (!filledForm.name || filledForm.name?.length < 2) document.querySelector('#clientName').classList.add('p-invalid')
+		if(!clientForm.phoneNum || !validPhoneNum(clientForm.phoneNum)) document.querySelector('#phoneNum').classList.add('p-invalid')
+		if(clientForm.typeOfClient === 'company' && (!clientForm.companyId || clientForm.companyId?.length < 10)) document.querySelector('#taxNumber').classList.add('p-invalid')
+		if (!clientForm.name || clientForm.name?.length < 2) document.querySelector('#clientName').classList.add('p-invalid')
 		let checkForInvalids = document.querySelectorAll('.p-invalid')
 		
 		if(checkForInvalids.length === 0) prepareData()
@@ -91,26 +91,24 @@ function ClientForm(){
 		let preparedData = {
 				id: ID,
 
-				Tel: validPhoneNum(filledForm.phoneNum),
-				Tel2: filledForm.phoneNum2 || "",
-				Imie: filledForm.name,
-				Rodzaj: filledForm.typeOfClient === 'company' ? 'Firma' : 'Prywatny',
-				NIP: filledForm.typeOfClient === 'company' ? filledForm.companyId : "",
-				KodPocztowy: filledForm.postCode || "",
-				Miejscowosc: filledForm.city || "",
-				Ulica: filledForm.address || "",
+				Tel: validPhoneNum(clientForm.phoneNum),
+				Tel2: clientForm.phoneNum2 || "",
+				Imie: clientForm.name,
+				Rodzaj: clientForm.typeOfClient === 'company' ? 'Firma' : 'Prywatny',
+				NIP: clientForm.typeOfClient === 'company' ? clientForm.companyId : "",
+				KodPocztowy: clientForm.postCode || "",
+				Miejscowosc: clientForm.city || "",
+				Ulica: clientForm.address || "",
 
-				Opis: filledForm.description || "",
+				Opis: clientForm.description || "",
 				Ostatnia_Aktualizacja: currentTime,
 		}
 
 		if(pathname.indexOf('edit') > 0){
-			if(validPhoneNum(activeClient['Tel']) !== validPhoneNum(filledForm.phoneNum)) {
+			if(validPhoneNum(activeClient['Tel']) !== validPhoneNum(clientForm.phoneNum)) {
+				// updateClientNumber(OLD_DATA, NEW_DATA)
 				let confirmUpdate = await updateClientNumber(activeClient, preparedData)
-				if(confirmUpdate !== false) {
-					toast.success(`Client's contact number has been updated: \n${preparedData.Tel}`)
-					navigate('/clients')
-				} else toast.error("An error occured while updating the client's data. Please try again")
+				if(confirmUpdate !== false) navigate('/clients')
 			} else sendDataToFirebase(preparedData)
 		} else sendDataToFirebase(preparedData)
 	}
@@ -169,7 +167,7 @@ function ClientForm(){
 
 
     function resetForm(){
-		setFilledForm(clearForm[0])
+		setClientForm(clearForm[0])
 	}
 
 
@@ -207,7 +205,7 @@ function ClientForm(){
             <h3 className="mt-3">Required: </h3>
 
             <span className="p-float-label mt-4">
-              <InputText type="text" id="phoneNum" required value={filledForm.phoneNum} onChange={(e) => setFilledForm({...filledForm, phoneNum: e.target.value})} />
+              <InputText type="text" id="phoneNum" required value={clientForm.phoneNum} onChange={(e) => setClientForm({...clientForm, phoneNum: e.target.value})} />
               <label htmlFor="phoneNum">Phone number*</label>
             </span>
 
@@ -215,27 +213,27 @@ function ClientForm(){
             <div className="flex flex-row mt-3">
             {clientTypes.map(type => 
               <div className="field-radiobutton" key={type.key}>
-                <RadioButton name="typeOfClient" id={type.key} value={type.key} checked={ type.key === filledForm.typeOfClient} 
-                             onChange={e => setFilledForm({...filledForm, typeOfClient: e.value})} className="ml-2" />
+                <RadioButton name="typeOfClient" id={type.key} value={type.key} checked={ type.key === clientForm.typeOfClient} 
+                             onChange={e => setClientForm({...clientForm, typeOfClient: e.value})} className="ml-2" />
                 <label htmlFor="typeOfClient">{type.name}</label>
               </div>
             )}
             </div>
 
-            {filledForm.typeOfClient === 'individual' && 
+            {clientForm.typeOfClient === 'individual' && 
               <span className="p-float-label mt-3">
-                <InputText type="text" id="clientName" value={filledForm.name} onChange={(e) => setFilledForm({...filledForm, name: e.target.value})} />
+                <InputText type="text" id="clientName" value={clientForm.name} onChange={(e) => setClientForm({...clientForm, name: e.target.value})} />
                 <label htmlFor="clientName">Client Name*</label>
               </span>
 						}
-            {filledForm.typeOfClient === 'company' && 
+            {clientForm.typeOfClient === 'company' && 
               <div className="flex flex-column sm:flex-row mt-3">
                 <span className="p-float-label">
-                  <InputText type="text" id="clientName" value={filledForm.name} onChange={(e) => setFilledForm({...filledForm, name: e.target.value})} />
+                  <InputText type="text" id="clientName" value={clientForm.name} onChange={(e) => setClientForm({...clientForm, name: e.target.value})} />
                   <label htmlFor="clientName">Company name*</label>
                 </span>
                 <span className="p-float-label mt-4 sm:mt-0 ml-0 sm:ml-2">
-                  <InputMask mask="9999999999" id="taxNumber" value={filledForm.companyId} onChange={(e) => setFilledForm({...filledForm, companyId: e.target.value})} style={{width:'125px'}} />
+                  <InputMask mask="9999999999" id="taxNumber" value={clientForm.companyId} onChange={(e) => setClientForm({...clientForm, companyId: e.target.value})} style={{width:'125px'}} />
                   <label htmlFor="taxNumber">Tax Number*</label>
                 </span>
               </div>
@@ -245,22 +243,22 @@ function ClientForm(){
           <div className="flex flex-column justify-content-evenly align-items-center sm:align-items-start">
             <h3 className="mt-3">Extra: </h3>
             <span className="p-float-label mt-4">  
-              <InputText type="text" id="phoneNum2" value={filledForm.phoneNum2} onChange={(e) => setFilledForm({...filledForm, phoneNum2: e.target.value})} />
+              <InputText type="text" id="phoneNum2" value={clientForm.phoneNum2} onChange={(e) => setClientForm({...clientForm, phoneNum2: e.target.value})} />
               <label htmlFor="phoneNum2">Another phone number</label>
             </span>
             <h4 className="mt-2">Address</h4>
             <div className="flex flex-column sm:flex-row">
               <span className="p-float-label mt-4">
-                <InputMask mask="99-999" id="postCode" value={filledForm.postCode} onChange={(e) => setFilledForm({...filledForm, postCode: e.target.value})} style={{width:'120px'}} />
+                <InputMask mask="99-999" id="postCode" value={clientForm.postCode} onChange={(e) => setClientForm({...clientForm, postCode: e.target.value})} style={{width:'120px'}} />
                 <label htmlFor="postCode">Post Code</label>
               </span>
               <span className="p-float-label mt-4 ml-0 sm:ml-2">
-                <InputText type="text" id="city" value={filledForm.city} onChange={(e) => setFilledForm({...filledForm, city: e.target.value})} />
+                <InputText type="text" id="city" value={clientForm.city} onChange={(e) => setClientForm({...clientForm, city: e.target.value})} />
                 <label htmlFor="city">City</label>
               </span>
             </div>
             <span className="p-float-label mt-4">
-              <InputText type="text" id="address" value={filledForm.address} onChange={(e) => setFilledForm({...filledForm, address: e.target.value})} />
+              <InputText type="text" id="address" value={clientForm.address} onChange={(e) => setClientForm({...clientForm, address: e.target.value})} />
               <label htmlFor="address">Street and number</label>
             </span>
 
@@ -270,7 +268,7 @@ function ClientForm(){
           <h3 className="mt-3 mb-1 text-center">Additional informations:</h3>
         </label>
         <Editor id="textArea" className="mx-auto mt-2 mb-5" headerTemplate={editorHeader} style={{height: '200px'}}
-								value={filledForm.description} onTextChange={(e) => setFilledForm({...filledForm, description: e.htmlValue})}>
+								value={clientForm.description} onTextChange={(e) => setClientForm({...clientForm, description: e.htmlValue})}>
         </Editor>
       </form>
   </Card>

@@ -96,12 +96,8 @@ function ManageClients(){
             acceptClassName: 'p-button-success',
             rejectClassName: 'p-button-danger',
             accept: () => {
-              let confirm = DeleteFunc('client', MainPath , Tel)
-              if(confirm !== false) {
-                toast.success("Client's data successfully deleted.")
-                setRecivedClients(recivedClients.filter(client => client.Tel !== Tel)) 
-              }
-              else toast.error("Unable to delete client data, please try again!")
+              let confirm = DeleteFunc('Client', MainPath , Tel)
+              if(confirm !== false) setRecivedClients(recivedClients.filter(client => client.Tel !== Tel)) 
             },
             reject: () => {}
           })
@@ -123,12 +119,12 @@ function ManageClients(){
         return recivedVehicles.map(car => car).filter(item => item?.Tel === clientTel)
       }
 
-			async function relocateFunc(carData, target) {
-				const confirmUnassign = await relocateCarsFunc(carData, target)
+			async function relocateFunc(carData, targetVIN) {
+				const confirmUnassign = await relocateCarsFunc(carData, targetVIN)
 					if (confirmUnassign !== false) {
 						toast.dismiss()
 						toast.success('Successfully deleted vehicle assigment.')
-						let filterVehicles = recivedVehicles.map(car => car.VIN === target ? car.Tel = '' : car)
+						let filterVehicles = recivedVehicles.map(car => car.VIN === targetVIN ? car.Tel = '' : car)
             setRecivedVehicles(filterVehicles)
 					}
 			}
@@ -145,16 +141,16 @@ function ManageClients(){
       function redirectToCarDetails(vehicle, client) {
           getClientData(client)
           getVehicleData(vehicle)
-          navigate(`/vehicles/details/${vehicle.Tel}`)
+          navigate(`/vehicles/details/${vehicle.VIN}`)
       }
 			 function openVehicleEditForm(vehicle) {
           getVehicleData(vehicle)
-          navigate(`/vehicles/details/${vehicle.Tel}/edit`)
+          navigate(`/vehicles/details/${vehicle.VIN}/edit`)
 			 }
 
       function openVehicleAddForm(Tel) {
           getActivePhoneNumber(Tel)
-          toast.success(`Phone number ${Tel} has been copied to clipboard`)
+          toast.success(`Phone number ${Tel} has been copied to clipboard!`)
           navigate(`/vehicles`)
       }
 
@@ -185,19 +181,19 @@ function ManageClients(){
       </div>
       )}
 
-    const telephoneBody = (data) => {
+    const telephoneBody = ({Tel, Tel2}) => {
         return(
             <div className="flex flex-column text-center mx-auto" onDoubleClick={(e) => copyValue(e)} style={{width: '96px', maxWidth:'120px'}}>
-                <div>{data.Tel}</div>
-                <div className={data.Tel2 ? "" : 'hidden'}> { data.Tel2 }</div>
+                <div>{Tel}</div>
+                <div className={Tel2 ? "" : 'hidden'}> { Tel2 }</div>
             </div>
         )}
     
-    const clientNameBody = (data) =>{
+    const clientNameBody = ({Imie, NIP}) =>{
         return(
             <div className="flex flex-column" onDoubleClick={(e) => copyValue(e)}>
-                <div className="pointer">{data.Imie}</div>
-                <div className={"pointer" + data.NIP ? '' : 'hidden'}> { data.NIP }</div>
+                <div className="pointer">{Imie}</div>
+                <div className={"pointer" + NIP ? '' : 'hidden'}> { NIP }</div>
             </div>
         )}
 
@@ -247,12 +243,12 @@ function ManageClients(){
     <Column field="Tel2" className="hidden" />
     <Column field="Tel" header="Phone Number" className="text-center" body={telephoneBody} />
     <Column field="Imie" header="Client Name" className="text-center" body={clientNameBody} />
-    <Column field="Opis" header="Description" className="text-center" body={(data) => <div className="px-4 text-wrap" dangerouslySetInnerHTML={{__html: data.Opis}}></div>} />
+    <Column field="Opis" header="Description" className="text-center" body={({Opis}) => <div className="px-4 text-wrap" dangerouslySetInnerHTML={{__html: Opis}}></div>} />
     <Column header="Vehicles" className="p-text-center" style={{width:'270px'}} field="Pojazdy" body={vehiclesBody} />
     {/* Whole vehicle component is rendered above */}
     {/* Below columns are hidden, because they are needed just to filter in the search box */}
-    <Column header="VIN" className="hidden" field={(data) => onlyCars(data.Tel).map(car => car.VIN)} />
-    <Column header="Manufacture and Model" className="hidden" field={(data) => onlyCars(data.Tel).map(car => `${car.Marka} ${car.Model}`)} />
+    <Column header="VIN" className="hidden" field={({Tel}) => onlyCars(Tel).map(car => car.VIN)} />
+    <Column header="Manufacture and Model" className="hidden" field={({Tel}) => onlyCars(Tel).map(car => `${car.Marka} ${car.Model}`)} />
  </DataTable> 
 
 <Button className={`p-button-secondary my-4 mx-auto ${disableNextButton ? 'hidden' : ''}`} onClick={() => getClientsFromFirebase('more')} 

@@ -7,7 +7,6 @@ import { DeleteFunc } from '../../components/EditMoveDeleteOptions'
 import { Card } from 'primereact/card'
 import { Button } from 'primereact/button'
 import { confirmDialog } from 'primereact/confirmdialog'
-import { toast } from 'react-toastify';
 
 import firebase from 'firebase/app'
 
@@ -41,31 +40,26 @@ function ClientDetails(){
 			acceptClassName: 'p-button-success',
           	rejectClassName: 'p-button-danger',
 			accept: () => {
-				let confirm = DeleteFunc('client', clientPath , Tel)
-				if(confirm !== false) {
-					toast.success("Client's data successfully deleted.")
-					navigate(-1)
-				}
-				else toast.error("Unable to delete client data, please try again!")
+				let confirm = DeleteFunc('Client', clientPath , Tel)
+				if(confirm !== false) navigate(-1)
 			},
 			reject: () => {}
 		});
 	}
 
 
-		const title = <>
-				<div style={{position: 'absolute', top: '0px', right: '10px', fontSize: '2.2rem', cursor: 'pointer'}} onClick={() => navigate(-1)}>&times;</div>
-				<div className="text-center">Details of { Imie }</div>
-			</>   
+	const title = <>
+		<div style={{position: 'absolute', top: '0px', right: '10px', fontSize: '2.2rem', cursor: 'pointer'}} onClick={() => navigate(-1)}>&times;</div>
+		<div className="text-center">Details of { Imie }</div>
+	</>   
 
-		const footer = <>
-				<div className="flex flex-column sm:flex-row justify-content-center">
-					<Button label="Edit Client Data" onClick={() => navigate(`/clients/details/${Tel}/edit`)} icon="pi pi-pencil" />
-					<Button label="Delete Client Data" className="p-button-danger mx-0 sm:mx-3 my-3 sm:my-0" icon="pi pi-trash" onClick={() => confirmDeleteModal(activeClient)}/>
-					<Button label="Assign vehicle" className="p-button-success" icon="pi pi-car" onClick={() => navigate('/vehicles')}/>
-				</div>
-			</>
-
+	const footer = <>
+		<div className="flex flex-column sm:flex-row justify-content-center">
+			<Button label="Edit Client Data" onClick={() => navigate(`/clients/details/${Tel}/edit`)} icon="pi pi-pencil" />
+			<Button label="Delete Client Data" className="p-button-danger mx-0 sm:mx-3 my-3 sm:my-0" icon="pi pi-trash" onClick={() => confirmDeleteModal(activeClient)}/>
+			<Button label="Assign vehicle" className="p-button-success" icon="pi pi-car" onClick={() => navigate('/vehicles')}/>
+		</div>
+	</>
 
     return(
     <div className="pt-5">
