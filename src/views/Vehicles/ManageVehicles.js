@@ -7,7 +7,7 @@ import { confirmDialog } from 'primereact/confirmdialog'
 
 import { toast } from 'react-toastify'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useContext } from 'react'
 
@@ -29,7 +29,7 @@ function ManageVehicles(){
 
 	const [isLoading, setIsLoading] = useState(true)
 	const [totalNumberOfVehicles, setTotalNumberOfVehicles] = useState(0)
-	const [downloadLimit, setDownloadLimit] = useState(50)
+	const limit = useRef(50)
 	const [disableNextButton, setDisableNextButton] = useState(false)
 
 	const [tableFilters, setTableFilters] = useState({ 'global': { value: '', matchMode: FilterMatchMode.CONTAINS }})
@@ -44,47 +44,41 @@ function ManageVehicles(){
 
 
 	useEffect(() => {
+		limit.current = 50
 		getVehiclesFromFirebase()
 	},[])
 
 
     async function getVehiclesFromFirebase(req) {
-		let limit = 50
-        if (req === 'more') {
-			limit += 100
-			setDownloadLimit(downloadLimit+100)
+		try{
+			setIsLoading(true)
+
+			if (req === 'more') limit.current += 100
+			if (req === 'all') limit.current = Infinity
+
+			let vehiclePath = MainPath.orderBy("Ostatnia_Aktualizacja", "desc").limit(limit.current)
+
+			const vehicleResponse = await vehiclePath.get()
+
+			const getAllVehicles = (await totalVehiclesPath.get()).data().Pojazdy
+			setTotalNumberOfVehicles(getAllVehicles)
+
+			if (!vehicleResponse.docs.length) throw Error('Empty vehicles list')
+
+			setRecivedVehicles(vehicleResponse.docs.map(doc => doc.data()))
+
+			setIsLoading(false)
+			setDisableNextButton(false)
+
+			if (req === 'all' || vehicleResponse.docs.length < limit.current) {
+				setDisableNextButton(true)
+				toast.info('All vehicles have been downloaded!')
+			}
+		}catch(err){
+			setDisableNextButton(true)
+			toast.warn(err.message)
 		}
-
-        let vehiclePath = MainPath
-        	.orderBy("Ostatnia_Aktualizacja", "desc")
-        	.limit(req === 'more' ? downloadLimit+100 : downloadLimit )
-
-        if (req === 'all') {
-    		vehiclePath = MainPath.orderBy("Ostatnia_Aktualizacja", "desc")
-    		setIsLoading(true)
-        }
-
-       const clientResponse = await vehiclePath.get()
-
-       const getAllVehicles = (await totalVehiclesPath.get()).data().Pojazdy
-			 setTotalNumberOfVehicles(getAllVehicles)
-
-
-       if (!clientResponse.docs.length) {
-         setDisableNextButton(true)
-         toast.info('All vehicles have been downloaded!')
-       }
-
-       setRecivedVehicles(clientResponse.docs.map(doc => doc.data()))
-
-       setIsLoading(false)
-       setDisableNextButton(false)
-
-       if (req === 'all' || clientResponse.docs.length < limit) {
-         setDisableNextButton(true)
-         toast.info('All vehicles have been downloaded!')
-       }
-     }
+    }
 
 		function showEvent(searchVal) {
 			if (searchVal.length > 2) setTableFilters({ 'global': { value: searchVal, matchMode: FilterMatchMode.CONTAINS }})
@@ -157,7 +151,7 @@ function ManageVehicles(){
 		//
 	const tableHeader = <div className="flex justify-content-between flex-column md:flex-row">
           <Button icon="pi pi-filter-slash" label="Clear" className="p-button-outlined" onClick={() => clearTableFilters()} tooltip='Clear' />
-          <div className="my-3 md:my-0 text-center">{ recivedVehicles?.length } of { totalNumberOfVehicles } vehicles available for search</div>
+          <div className="my-3 md:my-0 text-center">{recivedVehicles.length === totalNumberOfVehicles ? 'All' :`${recivedVehicles.length } of ${ totalNumberOfVehicles }`} vehicles available for search</div>
           <span className="p-input-icon-left">
             <i className="pi pi-search" />
             <InputText placeholder="Filter..." onKeyUp={(e) => showEvent(e.target.value.trim())} tooltip="Type at least 3 characters to search" tooltipOptions={{position: 'left'}}/>

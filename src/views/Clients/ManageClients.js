@@ -8,7 +8,7 @@ import { confirmDialog } from 'primereact/confirmdialog'
 
 import { toast } from 'react-toastify';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 
@@ -31,7 +31,7 @@ function ManageClients(){
     const [recivedClients, setRecivedClients] = useState([])
     const [recivedVehicles, setRecivedVehicles] = useState([])
     const [totalNumberOfClients, setTotalNumberOfClients] = useState(0)
-    const [downloadLimit, setDownloadLimit] = useState(50)
+    const limit = useRef(50)
     const [disableNextButton, setDisableNextButton] = useState(false)
 
     const [tableFilters, setTableFilters] = useState({ 'global': { value: '', matchMode: FilterMatchMode.CONTAINS }})
@@ -41,6 +41,7 @@ function ManageClients(){
     const MainPath = firebase.firestore()
                     .collection('warsztat').doc('Klienci').collection('Numery')
 
+      // download all available vehicles and then match them to every client on the list
     const vehiclePath = firebase.firestore()
                         .collection('warsztat').doc('Pojazdy').collection('VIN')
 
@@ -49,25 +50,20 @@ function ManageClients(){
 
 
 		useEffect(() => {
+      limit.current = 50
 			getClientsFromFirebase()
 		}, [])
 
 
      async function getClientsFromFirebase(req) {
-			 let limit = 50
-       if (req === 'more') {
-				 setDownloadLimit(downloadLimit+50)
-				 limit += 50
-			 }
+
+       setIsLoading(true)
+       if (req === 'more') limit.current += 100
+       if (req === 'all') limit.current = Infinity
 
        let clientPath = MainPath
-         .orderBy("Ostatnia_Aktualizacja", "desc")
-         .limit(req === 'more' ? downloadLimit+50 : downloadLimit )
-
-       if (req === 'all') {
-         clientPath = MainPath.orderBy("Ostatnia_Aktualizacja", "desc")
-         setIsLoading(true)
-       }
+                        .orderBy("Ostatnia_Aktualizacja", "desc")
+                        .limit(limit.current)
 
        let clientResponse = await clientPath.get()
        let vehicleResponse = await vehiclePath.get()
@@ -252,7 +248,7 @@ function ManageClients(){
  </DataTable> 
 
 <Button className={`p-button-secondary my-4 mx-auto ${disableNextButton ? 'hidden' : ''}`} onClick={() => getClientsFromFirebase('more')} 
-        label="Download another 50 clients" icon={(!recivedClients || isLoading) ? 'pi pi-spin pi-spinner' : 'pi pi-download'} />
+        label="Download another 100 clients" icon={(!recivedClients || isLoading) ? 'pi pi-spin pi-spinner' : 'pi pi-download'} />
 
 </div>
     </>)
