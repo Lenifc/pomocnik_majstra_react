@@ -1,0 +1,38 @@
+input:disabled{
+  color:black;
+  font-weight: bold;
+  background-color: rgba(255,255,255,0.66);
+}
+
+.p-inputnumber-input{
+  max-width: 110px;
+}
+
+.quantityWOCurrent input,
+.taxWOCurrent input,
+.price_netWOCurrent input{
+  max-width: 100%;
+}
+
+.serviceWO{
+  max-width: 450px;
+}
+
+.quantity input{
+  max-width: 80px
+}
+.priceNetWO input{
+  max-width: 126px;
+} 
+.totalNetWO input,
+.priceGrossWO input,
+.totalGrossWO input{
+  max-width: 140px
+}
+.taxWO input{
+  max-width: 76px;
+}
+
+.borderxd{
+  border: 2px solid red
+}
