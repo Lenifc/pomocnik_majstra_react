@@ -1,0 +1,6 @@
+.p-multiselect,
+.p-multiselect-label,
+.p-multiselect-label-container{
+max-width: 75vw!important; 
+overflow: hidden!important;
+}
