@@ -9,8 +9,6 @@ import { InputText } from 'primereact/inputtext'
 import { InputNumber } from 'primereact/inputnumber'
 import { Button } from 'primereact/button'
 
-import VehicleEntryProtocol from './VehicleEntryProtocol'
-
 function WorkOrderForm({passedWO, WOItems}){
 
     const cleanWO = useState({
@@ -27,7 +25,7 @@ function WorkOrderForm({passedWO, WOItems}){
 
 
     useEffect(() => {
-        if(passedWO.length) setItems(passedWO)
+        if(passedWO && passedWO.length) setItems(passedWO)
     },[])
 
     useEffect(() => {
@@ -126,10 +124,8 @@ function WorkOrderForm({passedWO, WOItems}){
     }, [WO.price_net, WO.quantity, WO.tax])
 
 
-    return (
-  <div>
+    return (<>
     <div className="flex justify-content-center align-items-center pt-5">
-      <VehicleEntryProtocol /> 
     </div>
     
     <div style={{maxWidth:'1200px'}} className="pb-4">
@@ -197,8 +193,7 @@ function WorkOrderForm({passedWO, WOItems}){
         </div>
           </div>
       </div>
-    </div>
-    )
+    </>)
 }
 
 export default WorkOrderForm
