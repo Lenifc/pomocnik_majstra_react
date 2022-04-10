@@ -16,6 +16,7 @@ import firebase from 'firebase/app'
 import { DeleteFunc, RelocateTicket } from '../../components/EditMoveDeleteOptions'
 import RelocateTicketDialog from './TasksComponents/RelocateTicketsDialog';
 import WorkOrderForm from './TasksComponents/WorkOrderForm'
+import VehicleEntryProtocol from './TasksComponents/VehicleEntryProtocol'
 
 function TaskDetails(){
 
@@ -55,7 +56,6 @@ function TaskDetails(){
             let data = await tickets.collection(targetPath).doc(`zlecenie-${taskID}`).get()
             if(data.exists) setTicketDetails(data.data())
             else throw Error('No data at given path. It may be recently moved or deleted!')
-                // store.commit('setFillProtocol', ticketDetails['ProtokolPrzyjecia'])
             setIsLoading(false)
 
         } catch(err){
@@ -87,7 +87,6 @@ function TaskDetails(){
 
     async function updateTicket() {
       let updatedTicket = []
-    //   ticketDetails['ProtokolPrzyjecia'] = JSON.parse(JSON.stringify(store.state.protocolData))
 
       updatedTicket = ticketDetails
 
@@ -174,8 +173,8 @@ function TaskDetails(){
                 onClick={() => openRelocateDialog(ticketDetails)} label="Relocate" icon="fas fa-arrows-alt-h" />
         <Button disabled={isLoading} className="p-button-danger mx-1 my-2 sm:my-0"
                 onClick={() => confirmDeleteModal(ticketDetails)} icon="pi pi-trash" label="Delete Ticket" />
-        {polishNamedCollectionPath === 'zakonczone' && ticketDetails?.['Wykonane_uslugi_czesci']?.length && 
-        <Button disabled={isLoading} className="p-button-help mx-1 my-1 sm:my-0" label="Generate Invoide"
+        {polishNamedCollectionPath === 'zakonczone' && ticketDetails?.['Wykonane_uslugi_czesci']?.length > 0 && 
+        <Button disabled={isLoading} className="p-button-help mx-1 my-1 sm:my-0" label="Generate Invoice"
                 onClick={() => OpenInvoiceVizualization()}  icon="pi pi-print" /> }
   </div>
 
@@ -187,7 +186,7 @@ function TaskDetails(){
     <Card className="mt-6 relative" style={{maxWidth:'1200px', margin: '0 auto'}} title={cardTitle} footer={cardFooter}>
         {isLoading && <i className="flex justify-content-center pi pi-spin pi-spinner" /> }
         { !isLoading && <div>
-          <div id="ticketDetails?.['id']" className="column">
+          <div id={ticketDetails?.['id']} className="column">
             <div className="flex flex-column md:flex-row justify-content-center">
 
               <div className="client mr-0 mb-5 md:mr-5 md:mb-0">
@@ -211,7 +210,7 @@ function TaskDetails(){
 
                 <div>Drive type: { ticketDetails?.['Naped'] || "Data not provided"}</div>
                 <div>Transmission type: { ticketDetails?.['SkrzyniaBiegow'] || "Data not provided"}</div>
-                <div>Mileage: { ticketDetails?.['Przebieg'] }km</div>
+                { ticketDetails?.['Przebieg'] && <div>Mileage: { ticketDetails?.['Przebieg'] }km</div>}
               </div>
             </div>
             <div className="text-center mt-4">
@@ -226,7 +225,8 @@ function TaskDetails(){
             </div>
           </div>
 
-          <div className="flex justify-content-center">
+          <div className="flex flex-column justify-content-center mt-5">
+            <VehicleEntryProtocol protocolData={ticketDetails?.['ProtokolPrzyjecia']} triggerProtocol={(data) => setTicketDetails({...ticketDetails, ProtokolPrzyjecia: data})}/> 
             <WorkOrderForm passedWO={ticketDetails?.['Wykonane_uslugi_czesci']} WOItems={(data) => setWOItems(data)} />
           </div>
         </div>}
