@@ -210,7 +210,7 @@ function ManageTasks(){
 
         <Column style={{width: '45px'}} className="text-center" body={(data) => allTasks.indexOf(data)+1} />
         <Column header="ACTIONS" className="text-center" style={{width:'160px'}} body={optionsBody} />
-        <Column field="Dodane_Czas" header="Created at:" className={`text-center ${pathname === '/zakonczone' ? 'hidden' : ''}`} 
+        <Column field="Dodane_Czas" header="Created at:" className={'text-center'} 
                 style={{width:'140px'}} />
         <Column field="Imie" header="Client" className="text-center" body={(data) => <div onDoubleClick={(e) => copyValue(e)}>{ data['Imie'] }</div>} />
         <Column field="Tel2" className="hidden" />
@@ -226,7 +226,7 @@ function ManageTasks(){
         }} />
 
         <Column field="Numer_rejestracyjny" header="Number Plate" className="text-center" body={(data) => <div onDoubleClick={(e) => copyValue(e)}>{ data['Numer_rejestracyjny'] }</div>} />
-        <Column field="Zakonczone_Czas" header="Closed at:" className={`text-center ${pathname === '/zakonczone' ? '' : 'hidden'}`} style={{width:'150px'}} />
+        <Column field="Zakonczone_Czas" header="Closed at:" className={`text-center ${collectionPath === 'zakonczone' ? '' : 'hidden'}`} style={{width:'150px'}} />
     </DataTable>
 
     {showModal && <RelocateTicketDialog message={modalMsg}
