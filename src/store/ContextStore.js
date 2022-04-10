@@ -14,14 +14,25 @@ export function ContextProvider({children}) {
     setActiveVehicle(data)
   }
 
+  const [activeTask, setActiveTask] = useState('')
+  const getActiveTask = (data) => {
+    setActiveTask(data)
+  }
+
+  const [activeInvoice, setActiveInvoice] = useState('')
+  const getActiveInvoice = (data) => {
+    setActiveInvoice(data)
+  }
+
   const [activePhoneNumber, setActivePhoneNumber] = useState('')
   const getActivePhoneNumber = (data) => {
     setActivePhoneNumber(data)
   }
 
 
+
   return (
-    <ContextStore.Provider value={{activeClient, getClientData, activeVehicle, getVehicleData, activePhoneNumber, getActivePhoneNumber}}>
+    <ContextStore.Provider value={{activeClient, getClientData, activeVehicle, getVehicleData, activePhoneNumber, getActivePhoneNumber, activeTask, getActiveTask, activeInvoice, getActiveInvoice}}>
       {children}
     </ContextStore.Provider>
   )

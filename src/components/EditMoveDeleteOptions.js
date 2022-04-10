@@ -10,8 +10,7 @@ export async function DeleteFunc(objectType, docPath, ID, operationType) {
   let ConfirmDelete
   
   try{
-    const docReference = docPath.doc(`${objectType === 'ticket' ? 'zlecenie-' : ''}${ID}`)
-    console.log(objectType);
+    const docReference = docPath.doc(`${objectType === 'Ticket' ? 'zlecenie-' : ''}${ID}`)
     
     const referenceExists = await docReference.get()
     if(referenceExists.exists) {

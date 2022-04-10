@@ -16,6 +16,7 @@ import ManageTasks from './views/Tasks/ManageTasks';
 import NewTaskForm from './views/Tasks/NewTaskForm';
 import TaskDetails from './views/Tasks/TaskDetails';
 import SearchForm from './views/Search/SearchForm';
+import Invoice from './views/Invoice/InvoicePreview';
 import SettingsPage from './views/SettingsPage/SettingsPage';
 import WorkshopDetails from './views/SettingsPage/WorkshopDetails';
 import LoginModule from './views/Login/LoginModule';
@@ -157,7 +158,8 @@ function App() {
             <Route path="/tasks/inprogress" element={<ManageTasks />} />
             <Route path="/tasks/closed" element={<ManageTasks />} />
             <Route path="/tasks/create-new" element={<NewTaskForm />} />
-            <Route path="/tasks/details/:taskID" element={<TaskDetails />} />
+            <Route path="/tasks/details/:collectionPath/:taskID" element={<TaskDetails />} />
+            <Route path="/generate-invoice-preview" element={<Invoice />} />
             <Route path="/search/*" element={<SearchForm />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/workshop/details" element={<WorkshopDetails />} />
