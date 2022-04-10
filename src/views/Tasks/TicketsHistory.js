@@ -19,14 +19,12 @@ export default function TicketsHistory({VIN, Tel}){
     function calcTotalCosts(order) {
         let totalGross = 0
         let totalNet = 0
-        order.forEach(item => {
+        if(order) order.forEach(item => {
             totalGross += Number(item['totalCost_gross'])
             totalNet += Number(item['totalCost_net'])
         })
-        return (<>
-            <div>Total Gross: <span style={{ color: 'var(--primary-color)'}} >{totalGross.toFixed(2)} </span>PLN</div>
-            <div>Total Net: <span style={{ color: 'var(--primary-color)'}} >{totalNet.toFixed(2)} </span>PLN</div>
-        </>)
+        return `<div>Total Gross: <span style="color: var(--primary-color)">${totalGross.toFixed(2)} </span>PLN</div>
+                <div>Total Net: <span style="color: var(--primary-color)" >${totalNet.toFixed(2)} </span>PLN</div>`
     }
 
     function showName(name) {
@@ -54,7 +52,6 @@ export default function TicketsHistory({VIN, Tel}){
             } else {
                 let anyData = results.some(ticket => ticket[1].length > 0)
                 setIsAnyDataInHistory(results.some(ticket => ticket[1].length > 0)) // check if there is any data in all 3 arrays
-                console.log(ticketsHistory, results, results.some(ticket => ticket[1].length > 0));
                 setHistoryLoaded(true)
                 if (!anyData) {
                     toast.dismiss()
@@ -80,13 +77,13 @@ export default function TicketsHistory({VIN, Tel}){
                     <Fieldset style={{ padding: '3px!important' }} legend={`Utworzone: ${unique['Dodane_Czas']}`} toggleable={true} collapsed={true}
                                 className="my-2">
                         <div className="fieldset-data my-2">
-                            <div>ID zlecenia: 
-                                <a className="font-bold" href={`/tasks/details/${ticket[0]}/${unique?.['Tel']}/${unique?.['id']}`}>{ unique.id }</a>
+                            <div>Ticket's ID: 
+                                <a className="font-bold" href={`/tasks/details/${ticket[0] === 'nowe' ? 'new' : (ticket[0] === 'obecne' ? 'inprogress' : 'closed')}/${unique?.['id']}`}> { unique.id }</a>
                             </div>
                             <div>Client's Name / Company: { unique['Imie'] }</div>
                             <div>Contact phone number: { unique?.['Tel'] }</div>
                             <div>Ticket's Status: <span className="font-bold">{showName(ticket[0])}</span></div>
-                            <div>Mileage: { unique.Przebieg } km</div>
+                            { unique.Przebieg && <div>Mileage: { unique.Przebieg } km</div>}
                             <div className="mt-2">Created at: {unique['Dodane_Czas']}</div>
                             { unique['Zakonczone_Czas'] && ticket[0] === 'zakonczone' && <div>Closed at: {unique['Zakonczone_Czas']}</div>}
                         </div>
@@ -98,7 +95,7 @@ export default function TicketsHistory({VIN, Tel}){
                             <DataTable value={unique['Wykonane_uslugi_czesci']} responsiveLayout="scroll" stripedRows showGridlines
                                         className="my-2 text-center datatable-sm" dataKey="id" header={<div dangerouslySetInnerHTML={{ __html: calcTotalCosts(unique['Wykonane_uslugi_czesci']) }}></div>}>
 
-                                <Column style={{width: '45px'}} className="text-center" body={(data) => unique.indexOf(data)+1} />
+                                <Column style={{width: '45px'}} className="text-center" body={(data) => unique['Wykonane_uslugi_czesci'].indexOf(data)+1} />
                                 <Column field="part_service_Name" header="Nazwa:" className="text-center" body={data => <div className="text-left">{data['part_service_Name'] || ''}</div>}/>
                                 <Column field="quantity" header="Ilość" />
                                 <Column field="price_net" header="Cena Netto[PLN]:" />
@@ -110,10 +107,10 @@ export default function TicketsHistory({VIN, Tel}){
                         </>}
                         { !unique['Wykonane_uslugi_czesci'].length && <div>This ticket has empty price estimate!</div> }
                     </Fieldset>
-                </div> )})}
+                </div> )} )}
                 </Fieldset> 
             </>}
-        </div> )})}
+        </div> )} )}
     </div>}
     { !isAnyDataInHistory && historyLoaded && <div>This vehicle has empty service history.</div> }
   </div>)
