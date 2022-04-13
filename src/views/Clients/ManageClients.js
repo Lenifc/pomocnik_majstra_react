@@ -77,7 +77,7 @@ function ManageClients(){
        setIsLoading(false)
        setDisableNextButton(false)
 
-       if (!clientResponse.docs.length || req === 'all' || clientResponse.docs.length < limit) {
+       if (!clientResponse.docs.length || req === 'all' || clientResponse.docs.length < limit.current) {
          setDisableNextButton(true)
          toast.info('All clients have been downloaded!', {autoClose: 3000})
        }
@@ -155,7 +155,7 @@ function ManageClients(){
     const tableHeader = 
     <div className="flex justify-content-between flex-column sm:flex-row">
         <Button icon="pi pi-filter-slash" label="Clear" className="p-button-outlined" onClick={() => clearTableFilters()} />
-        <div className="my-3 sm:my-0 text-center">{ recivedClients?.length || 0 } of { totalNumberOfClients } clients available for search</div>
+        <div className="my-3 sm:my-0 text-center">{recivedClients.length === totalNumberOfClients ? 'All' :`${recivedClients.length } of ${totalNumberOfClients}`} clients available for search</div>
         <span className="p-input-icon-left">
             <i className="pi pi-search" />
             <InputText placeholder="Filter..." onKeyUp={(e) => showEvent(e.target.value.trim())} tooltip="Type at least 3 characters to search" tooltipOptions={{position: 'left'}}/>
