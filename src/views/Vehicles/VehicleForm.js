@@ -26,7 +26,7 @@ function VehicleForm(){
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
-  const { activeVehicle, activePhoneNumber, getActivePhoneNumber, getVehicleData } = useContext(ContextStore)
+  const { activeVehicle, activePhoneNumber, getActivePhoneNumber, getVehicleData, getClientData } = useContext(ContextStore)
 
   const [phoneNumNotStored, setPhoneNumNotStored] = useState(true)
   const [phoneNum, setPhoneNum] = useState(activePhoneNumber || '')
@@ -398,6 +398,7 @@ function VehicleForm(){
       return () => {
         controller.abort()
         getVehicleData('')
+        getClientData('')
         getActivePhoneNumber('')
       }
     },[]) 
