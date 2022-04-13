@@ -15,9 +15,14 @@ i{
   font-size: 1.5rem;
 }
 
-a{
+a, .link{
   color:var(--yellow-200);
   text-decoration: none;
+}
+
+.active{
+  background-color: var(--green-600)!important;
+  color: white!important;
 }
 
 .menuTitle{
