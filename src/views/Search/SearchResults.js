@@ -127,7 +127,7 @@ function SearchResults({outputVehicles, outputClient}){
 
     return(
         <div className="flex flex-column justify-content-center align-items-center">
-            { resultData && resultData.length && <>
+            { resultData && resultData.length > 0 && <>
             <div className="flex flex-row justify-content-center pt-4">
                 <Button icon="pi pi-ban" className="p-button-secondary" label="Clear results" onClick={() => {
                         getActiveSearchResults('')
@@ -162,7 +162,7 @@ function SearchResults({outputVehicles, outputClient}){
         
                     { resultData?.[1] && <h3 className="text-center">Client's vehicles:</h3>}
                     { !resultData?.[1] && <h3>Client does not have any assigned vehicles</h3>}
-                    {resultData?.[1].map(vehicle => {
+                    {resultData?.[1] && resultData?.[1].map(vehicle => {
                     return ( <div className="vehicle relative" key={vehicle.VIN}>
                         <div className="toolbarVehicle">
                             <Button className="p-button-danger mr-2 p-button-rounded" icon="pi pi-trash" tooltip="Delete vehicle" onClick={() => confirmDeleteModal('removeCar', vehicle.VIN)} />

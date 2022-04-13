@@ -141,7 +141,7 @@ function SearchForm(){
                 tooltip="7-digits for landline ; 9-digits for mobile" label="Search for client"/>
           </Card>
         </div>
-      { (outputClient?.length > 0 || outputVehicles?.length > 0) && <SearchResults outputVehicles={outputVehicles} outputClient={outputClient} className="pt-5"/>}
+      { (outputClient || outputVehicles?.length > 0) && <SearchResults outputVehicles={outputVehicles} outputClient={outputClient} className="pt-5"/>}
       
       </div>)
 }
