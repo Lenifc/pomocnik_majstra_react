@@ -29,10 +29,15 @@ export function ContextProvider({children}) {
     setActivePhoneNumber(data)
   }
 
+  const [activeSearchResults, setActiveSearchResults] = useState('')
+  const getActiveSearchResults = (data) => {
+    setActiveSearchResults(data)
+  }
+
 
 
   return (
-    <ContextStore.Provider value={{activeClient, getClientData, activeVehicle, getVehicleData, activePhoneNumber, getActivePhoneNumber, activeTask, getActiveTask, activeInvoice, getActiveInvoice}}>
+    <ContextStore.Provider value={{activeClient, getClientData, activeVehicle, getVehicleData, activePhoneNumber, getActivePhoneNumber, activeTask, getActiveTask, activeInvoice, getActiveInvoice, activeSearchResults, getActiveSearchResults}}>
       {children}
     </ContextStore.Provider>
   )
