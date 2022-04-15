@@ -1,8 +1,14 @@
-This will be a copy of my Bachelor's app written in Vue3
+Live version: https://lenifc.github.io/pomocnik_majstra_react/
 
+DEMO Account:
+demouser1@email.pl:demodemo
+
+This will be a copy of my Bachelor's app written in Vue3 -> https://github.com/Lenifc/pomocnik_majstra
+
+G-Login works, but you will not have any permissions, only authenticated Accounts have read-write permision!
 
 ##
-Currently work in progress
+Work still in progress!
 ##
 
 
