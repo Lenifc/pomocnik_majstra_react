@@ -1,6 +1,7 @@
 {
   "name": "pomocnik_majstra_react",
   "version": "0.3.0",
+  "homepage": "https://lenifc.github.io/pomocnik_majstra_react/",
   "private": true,
   "dependencies": {
     "firebase": "^8.10.0",
@@ -20,7 +21,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -36,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
   }
 }
