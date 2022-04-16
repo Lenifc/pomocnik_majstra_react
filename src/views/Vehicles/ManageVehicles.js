@@ -4,6 +4,7 @@ import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { FilterMatchMode } from 'primereact/api'
 import { confirmDialog } from 'primereact/confirmdialog'
+import { Tooltip } from 'primereact/tooltip';
 
 import { toast } from 'react-toastify'
 
@@ -159,18 +160,19 @@ function ManageVehicles(){
       </div>
 
 	const optionsBody = (data) => {
-			return(	
-			<div className="flex flex-column align-items-center pointer">
-        <div className="flex flex-row pb-2">
-          <i className="fas fa-edit pr-3" tooltip="Edit vehicle's data" onClick={() => openVehicleEditForm(data)} />
-          <i className="fas fa-trash-alt" tooltip="Delete vehicle's data" onClick={() => confirmDeleteModal(data.VIN)} />
-        </div>
-        <div className="flex flex-row">
-          <i className="fas fa-info-circle pr-3" tooltip="Vehicle details" onClick={() => redirectToCarDetails(data)}></i>
-          {!data.Tel && <i className="pi pi-user-plus" style={{fontSize: '1.55rem'}} tooltip="Assign vehicle to a client" onClick={() => openPhoneNumberModal(data)}></i>}
-          {data.Tel && <i className="pi pi-user-minus" style={{fontSize: '1.55rem'}} tooltip="Delete any bindings with clients" onClick={() => relocateFunc(data, data.VIN)}></i>}
-        </div>
-      </div>)
+		return(	
+		<div className="flex flex-column align-items-center pointer">
+			<Tooltip target=".fas" />
+			<div className="flex flex-row pb-2">
+				<i className="fas fa-edit pr-3" data-pr-tooltip="Edit vehicle's data" onClick={() => openVehicleEditForm(data)} />
+				<i className="fas fa-trash-alt" data-pr-tooltip="Delete vehicle's data" onClick={() => confirmDeleteModal(data.VIN)} />
+			</div>
+			<div className="flex flex-row">
+				<i className="fas fa-info-circle pr-3" data-pr-tooltip="Vehicle details" onClick={() => redirectToCarDetails(data)}></i>
+				{!data.Tel && <i className="fas pi pi-user-plus" style={{fontSize: '1.55rem'}} data-pr-tooltip="Assign vehicle to a client" onClick={() => openPhoneNumberModal(data)}></i>}
+				{data.Tel && <i className="fas pi pi-user-minus" style={{fontSize: '1.55rem'}} data-pr-tooltip="Delete any bindings with clients" onClick={() => relocateFunc(data, data.VIN)}></i>}
+			</div>
+      	</div>)
 	}
 	const phoneNumBody = ({Tel}) => {
 		return (

@@ -5,6 +5,7 @@ import { InputText } from 'primereact/inputtext'
 import { FilterMatchMode } from 'primereact/api';
 import { Divider } from 'primereact/divider';
 import { confirmDialog } from 'primereact/confirmdialog'
+import { Tooltip } from 'primereact/tooltip';
 
 import { toast } from 'react-toastify';
 
@@ -165,14 +166,15 @@ function ManageClients(){
     const optionsBody = (data) => {
       return(
         <div className="flex flex-column align-items-center">
+          <Tooltip target=".clientButtons" />
         <div className="flex flex-row pb-2 pointer">
-          <i className="fas fa-edit pr-3" tooltip="Edit client's data" onClick={() => openClientEditForm(data)}></i>
-          <i className="fas fa-trash-alt" tooltip="Delete client's data"
+          <i className="clientButtons fas fa-edit pr-3" data-pr-tooltip="Edit client's data" onClick={() => openClientEditForm(data)}></i>
+          <i className="clientButtons fas fa-trash-alt" data-pr-tooltip="Delete client's data"
                 onClick={() => confirmDeleteModal(data, 'removeClient')}></i>
         </div>
         <div className="flex flex-row pointer">
-          <i className="fas fa-info-circle pr-2" tooltip="Client details" onClick={() => redirectToClientDetails(data)}></i>
-          <i className="fas fa-plus" tooltip="Assign new vehicle to the client" onClick={() => openVehicleAddForm(data.Tel)}><i className="fas fa-car"></i></i>
+          <i className="clientButtons fas fa-info-circle pr-2" data-pr-tooltip="Client details" onClick={() => redirectToClientDetails(data)}></i>
+          <i className="clientButtons fas fa-plus" data-pr-tooltip="Assign new vehicle to the client" onClick={() => openVehicleAddForm(data.Tel)}><i className="fas fa-car"></i></i>
         </div>
       </div>
       )}
@@ -206,9 +208,10 @@ function ManageClients(){
                       <div className="text-center white-space-nowrap overflow-hidden text-overflow-ellipsis width-160-for-phones" style={{width:'220px', maxWidth:'225px'}}>{car.VIN}</div>
                     </div>
                     <div className="flex flex-row justify-content-end align-items-center lower-margin pl-1 pointer">
-											<i className="fas fa-minus" tooltip="Delete vehicle bindings to the client" onClick={() => relocateFunc(car, car.VIN)}><i className="fas fa-car"></i></i>
-											<i className="fas fa-info-circle px-2" tooltip="Vehicle Details" onClick={() => redirectToCarDetails(car, data)}></i>
-											<i className="fas fa-edit" tooltip="Edit Vehicle's data" onClick={() => openVehicleEditForm(car)}></i>
+                      <Tooltip target=".vehicleButtons" position="left" />
+											<i className="vehicleButtons fas fa-minus" data-pr-tooltip="Delete vehicle bindings to the client" onClick={() => relocateFunc(car, car.VIN)}><i className="fas fa-car"></i></i>
+											<i className="vehicleButtons fas fa-info-circle px-2" data-pr-tooltip="Vehicle Details" onClick={() => redirectToCarDetails(car, data)}></i>
+											<i className="vehicleButtons fas fa-edit" data-pr-tooltip="Edit Vehicle's data" onClick={() => openVehicleEditForm(car)}></i>
                     </div>
                   </div>
 									<Divider />
