@@ -183,13 +183,13 @@ function ManageTasks(){
         <div className="flex justify-content-center mx-0">
             <Button onClick={() => redirectToDetails(data)}
                     className="p-button-outlined p-button-rounded p-button-primary" icon="fas fa-info-circle" 
-                    tooltip="Szczegóły zlecenia" />
+                    tooltip="Task details" />
             <Button onClick={() => openRelocateDialog(data)}
                     className="p-button-outlined p-button-rounded p-button-warning mx-1 xlg:mx-2 relocate" icon="fas fa-arrows-alt-h"
-                    tooltip="Przenieś zlecenie" />
+                    tooltip="Relocate task" />
             <Button onClick={() => confirmDeleteModal(data)}
                     className="p-button-outlined p-button-rounded p-button-danger remove" icon="fas fa-trash-alt"
-                    tooltip="Usuń zlecenie" />
+                    tooltip="Delete task" />
         </div>
         )
     }
