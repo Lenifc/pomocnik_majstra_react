@@ -67,8 +67,8 @@ function SearchResults({outputVehicles, outputClient}){
         icon: 'pi pi-exclamation-triangle',
         acceptClassName: 'p-button-success',
         rejectClassName: 'p-button-danger',
-        acceptLabel: 'Tak',
-        rejectLabel: 'Nie',
+        acceptLabel: 'Confirm',
+        rejectLabel: 'Cancel',
         accept: async () => {
             if (operation === 'removeClient') {
                 const confirmDelete = await DeleteFunc('Client', clientPath, target)
